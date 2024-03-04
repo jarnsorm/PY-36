@@ -1,25 +1,11 @@
 import shutil
-
-from fastapi import FastAPI, File, UploadFile, Query
+from db_shit.db_methods import create_tables, doc_add, doc_del
+from fastapi import FastAPI, UploadFile
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, HttpUrl
-from typing import Annotated
 import uvicorn
-import enum
 
 app = FastAPI()
 
-
-# class PicType(enum.Enum):
-#     """доступные форматы для загрузки"""
-#     jpeg = 'jpeg'
-#     gif = 'gif'
-#     png = 'png'
-
-
-# class Image(BaseModel):
-#     url: HttpUrl
-#     name: Annotated[str, Query(pattern='.jpeg')]
 
 
 @app.get('/')
@@ -29,11 +15,21 @@ def root():
 
 
 @app.post('/upload_doc')
-async def upload_file(file: UploadFile):
-    with open(f'Documents/{file.filename}', 'wb') as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    return {'filename': file.filename}
+def upload_file(file: UploadFile):
+    if file.filename.endswith(('.png', '.jpg', '.jpeg')):
+        with open(f'Documents/{file.filename}', 'wb') as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        doc_add(file.filename)
+        return {f'Файл {file.filename} сохранен'}
+    else:
+        return {'massage': 'wrong file.format'}
+
+
+@app.delete('/doc_delete')
+def delete_file(file_id: int):
+    doc_del(file_id)
 
 
 if __name__ == '__main__':
+    create_tables()
     uvicorn.run('main:app', reload=True)
