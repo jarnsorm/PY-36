@@ -1,5 +1,8 @@
+import os
+
 from db_shit.data import sync_connection, sync_engine
 from db_shit.models import Base, Documents
+from sqlalchemy import Select
 
 
 def create_tables():
@@ -20,6 +23,10 @@ def doc_add(filename):
 
 
 def doc_del(id: int):
+    with sync_connection() as conn:
+        query = Select(Documents.path).filter(Documents.id == id)
+        res = conn.execute(query).one()
+        os.remove(*res)
     with sync_connection() as conn:
         conn.query(Documents).filter(Documents.id == id).delete()
         conn.commit()
