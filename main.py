@@ -1,6 +1,6 @@
 import shutil, os, uvicorn
 from sqlalchemy import Select
-from db_shit.models import Documents,  create_tables
+from db_shit.models import Documents, create_tables, Documents_text
 from db_shit.data import sync_connection
 from fastapi import FastAPI, UploadFile
 from fastapi.responses import FileResponse
@@ -25,9 +25,9 @@ def upload_doc(file: UploadFile):
             doc = Documents(path=f'Documents/{file.filename}')
         conn.add(doc)
         conn.commit()
-        return {'massage': f'Файл {file.filename} сохранен'}
+        return {'massage': f'file {file.filename} has been uploaded'}
     else:
-        return {'massage': 'wrong file.format'}
+        return {'massage': 'wrong format of file'}
 
 
 @app.delete('/doc_delete')
@@ -41,7 +41,8 @@ def doc_delete(file_id: int):
             conn.query(Documents).filter(Documents.id == file_id).delete()
             conn.commit()
             return {'massage': 'file has been deleted'}
-        except Exception: return {'massage': 'wrong id'}
+        except Exception:
+            return {'massage': 'wrong id'}
 
 
 @app.get('/doc_analyse')
@@ -53,6 +54,13 @@ def doc_analyse(file_id: int):
 @app.get('/get_text')
 def get_text(file_id: int):
     """получение текста из БД"""
+    with sync_connection() as conn:
+        try:
+            query = Select(Documents_text.text).filter(Documents.id == file_id)
+            res = conn.execute(query).one()
+            return {'massage': f'{res}'}
+        except Exception:
+            return {'massage': 'wrong id'}
     pass
 
 
