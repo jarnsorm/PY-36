@@ -1,6 +1,6 @@
 import datetime
 from typing import Annotated
-
+from db_shit.data import sync_engine
 from sqlalchemy import MetaData, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
@@ -27,3 +27,7 @@ class Documents_text(Base):
     id: Mapped[intpk]
     id_doc: Mapped[int] = mapped_column(ForeignKey('documents.id', ondelete='CASCADE'))
     text: Mapped[str]
+
+
+def create_tables():
+    Base.metadata.create_all(sync_engine)
