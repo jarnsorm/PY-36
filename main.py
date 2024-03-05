@@ -22,9 +22,7 @@ def upload_doc(file: UploadFile):
         with open(f'Documents/{file.filename}', 'wb') as buffer:
             shutil.copyfileobj(file.file, buffer)
         with sync_connection() as conn:
-            doc = Documents(
-                path=f'Documents/{file.filename}',
-            )
+            doc = Documents(path=f'Documents/{file.filename}')
         conn.add(doc)
         conn.commit()
         return {'massage': f'Файл {file.filename} сохранен'}
