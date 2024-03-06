@@ -16,7 +16,7 @@ def root():
 
 
 @app.post('/upload_doc')
-def upload_doc(file: UploadFile):
+def upload_doc(file: UploadFile) -> dict:
     """загрузка файла в папку 'Documents', занесение данных о пути к файлу в БД"""
     if file.filename.endswith(('.png', '.jpg', '.jpeg')):
         with open(f'Documents/{file.filename}', 'wb') as buffer:
@@ -31,7 +31,7 @@ def upload_doc(file: UploadFile):
 
 
 @app.delete('/doc_delete')
-def doc_delete(file_id: int):
+def doc_delete(file_id: int) -> dict:
     """удаление файла, удаление данных о нем из БД"""
     with sync_connection() as conn:
         try:
@@ -46,17 +46,17 @@ def doc_delete(file_id: int):
 
 
 @app.get('/doc_analyse')
-def doc_analyse(file_id: int):
+def doc_analyse(file_id: int) -> dict:
     """получение текста из картинки, занесение текста в БД"""
     pass
 
 
 @app.get('/get_text')
-def get_text(file_id: int):
+def get_text(file_id: int) -> dict:
     """получение текста из БД"""
     with sync_connection() as conn:
         try:
-            query = Select(Documents_text.text).filter(Documents.id == file_id)
+            query = Select(Documents_text.text).filter(Documents_text.id_doc == file_id)
             res = conn.execute(query).one()
             return {'massage': f'{res}'}
         except Exception:

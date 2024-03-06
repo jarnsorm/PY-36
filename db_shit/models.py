@@ -25,7 +25,7 @@ class Documents_text(Base):
     __tablename__ = 'documents_text'
 
     id: Mapped[intpk]
-    id_doc: Mapped[int] = mapped_column(ForeignKey('documents.id', ondelete='CASCADE'))
+    id_doc: Mapped[int] = mapped_column(ForeignKey('documents.id', ondelete='CASCADE'), unique=True)
     text: Mapped[str]
 
 

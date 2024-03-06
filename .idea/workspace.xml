@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f2c7959b-f0fc-4474-a565-fa318668032e" name="Changes" comment="refactored">
+    <list default="true" id="f2c7959b-f0fc-4474-a565-fa318668032e" name="Changes" comment="get_text">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db_shit/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_shit/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -158,7 +160,15 @@
       <option name="project" value="LOCAL" />
       <updated>1709682258229</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="get_text">
+      <option name="closed" value="true" />
+      <created>1709682898882</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1709682898882</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -177,6 +187,7 @@
     <MESSAGE value="first" />
     <MESSAGE value="add + del" />
     <MESSAGE value="refactored" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactored" />
+    <MESSAGE value="get_text" />
+    <option name="LAST_COMMIT_MESSAGE" value="get_text" />
   </component>
 </project>
