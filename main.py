@@ -14,10 +14,10 @@ celery = Celery('tasks', broker='pyamqp://guest@localhost//')
 
 @celery.task
 def scan(image: str) -> str:
+    """получение текста из картинки"""
     img = Image.open(image)
     extr_text = pytesseract.image_to_string(img)
     return extr_text
-    pass
 
 
 @app.get('/')
@@ -42,29 +42,29 @@ def upload_doc(file: UploadFile) -> dict:
 
 
 @app.delete('/doc_delete')
-def doc_delete(file_id: int) -> dict:
+def doc_delete(doc_id: int) -> dict:
     """удаление файла, удаление данных о нем из БД"""
     with sync_connection() as conn:
         try:
-            query = Select(Documents.path).filter(Documents.id == file_id)
+            query = Select(Documents.path).filter(Documents.id == doc_id)
             res = conn.execute(query).one()
             os.remove(*res)
-            conn.query(Documents).filter(Documents.id == file_id).delete()
+            conn.query(Documents).filter(Documents.id == doc_id).delete()
             conn.commit()
             return {'massage': 'file has been deleted'}
         except Exception:
             return {'massage': 'wrong id'}
 
 
-@app.get('/doc_analyse')
-async  def doc_analyse(file_id: int) -> dict[str, str]:
-    """получение текста из картинки, занесение текста в БД"""
+@app.post('/doc_analyse')
+def doc_analyse(doc_id: int) -> dict[str, str]:
+    """занесение текста в БД"""
     try:
         with sync_connection() as conn:
-            query = Select(Documents.path).filter(Documents.id == file_id)
+            query = Select(Documents.path).filter(Documents.id == doc_id)
             res = conn.execute(query).one()
             img_text = scan(*res)
-            doc_text = Documents_text(id_doc=file_id, text=f'{img_text}')
+            doc_text = Documents_text(id_doc=doc_id, text=img_text)
             print(img_text)
         conn.add(doc_text)
         conn.commit()
@@ -74,11 +74,11 @@ async  def doc_analyse(file_id: int) -> dict[str, str]:
 
 
 @app.get('/get_text')
-def get_text(file_id: int) -> str | dict[str, str]:
+def get_text(doc_id: int) -> str | dict[str, str]:
     """получение текста из БД"""
     with sync_connection() as conn:
         try:
-            query = Select(Documents_text.text).filter(Documents_text.id_doc == file_id)
+            query = Select(Documents_text.text).filter(Documents_text.id_doc == doc_id)
             res = conn.execute(query).one()
             return f'{res}'
         except Exception:
