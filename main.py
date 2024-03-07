@@ -5,11 +5,10 @@ from db_shit.models import Documents, create_tables, Documents_text
 from db_shit.data import sync_connection
 from fastapi import FastAPI, UploadFile
 from fastapi.responses import FileResponse
-from celery import Celery
+from db_shit.config import celery
 
 
 app = FastAPI()
-celery = Celery('tasks', broker='pyamqp://guest@localhost//')
 
 
 @celery.task
@@ -83,7 +82,6 @@ def get_text(doc_id: int) -> str | dict[str, str]:
             return f'{res}'
         except Exception:
             return {'massage': 'wrong id'}
-    pass
 
 
 if __name__ == '__main__':

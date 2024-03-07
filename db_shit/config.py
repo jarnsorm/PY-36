@@ -1,3 +1,4 @@
+from celery import Celery
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,3 +32,5 @@ class SyncUrlSettings(BaseSettings):
 
 # async_settings = AsyncUrlSettings()
 sync_settings = SyncUrlSettings()
+
+celery = Celery('tasks', broker='pyamqp://guest@localhost//')
