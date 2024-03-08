@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f2c7959b-f0fc-4474-a565-fa318668032e" name="Changes" comment="scan + return text from image (selery, rabbitmq)">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db_shit/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_shit/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db_shit/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_shit/data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db_shit/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_shit/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -207,7 +210,23 @@
       <option name="project" value="LOCAL" />
       <updated>1709826747540</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="scan + return text from image (selery, rabbitmq)">
+      <option name="closed" value="true" />
+      <created>1709826768279</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1709826768279</updated>
+    </task>
+    <task id="LOCAL-00016" summary="scan + return text from image (selery, rabbitmq)">
+      <option name="closed" value="true" />
+      <created>1709826783587</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1709826783587</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
