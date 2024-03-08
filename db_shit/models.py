@@ -29,6 +29,7 @@ class Documents_text(Base):
     text: Mapped[str]
 
 
-def create_tables():
-    Base.metadata.drop_all(async_engine)
-    Base.metadata.create_all(async_engine)
+async def init_models():
+    async with async_engine.begin() as conn:
+        await conn.run_sunc(Base.metadata.drop_all)
+        await conn.run_sunc(Base.metadata.create_all)

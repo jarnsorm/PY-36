@@ -1,7 +1,9 @@
 import shutil, os, uvicorn, pytesseract
 from PIL import Image
 from sqlalchemy import Select
-from db_shit.models import Documents, create_tables, Documents_text
+from sqlalchemy.exc import IntegrityError
+
+from db_shit.models import Documents, init_models, Documents_text
 from db_shit.data import async_connection
 from fastapi import FastAPI, UploadFile
 from fastapi.responses import FileResponse
@@ -69,7 +71,7 @@ async def doc_analyse(doc_id: int) -> dict:
         conn.add(doc_text)
         await conn.commit()
         return {'message': f'text has been added'}
-    except ValueError:
+    except (ValueError, IntegrityError):
         return {'message': 'wrong id'}
 
 
@@ -80,11 +82,12 @@ async def get_text(doc_id: int) -> str | dict:
         try:
             query = Select(Documents_text.text).filter(Documents_text.id_doc == doc_id)
             res = await conn.execute(query)
-            return f'{res}'
+            result = res.one()
+            return f'{result[0]}'
         except Exception:
             return {'message': 'wrong id'}
 
 
 if __name__ == '__main__':
-    create_tables()
+    init_models()
     uvicorn.run('main:app', reload=True)
