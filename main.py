@@ -60,8 +60,6 @@ async def doc_analyse(doc_id: int) -> dict:
             res = result.one()
             scan_text = scan.delay(*res)
             img_text = scan_text.get()
-            print(scan_text)
-            print(img_text)
             doc_text = Documents_text(id_doc=doc_id, text=img_text)
 
         conn.add(doc_text)
