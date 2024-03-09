@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f2c7959b-f0fc-4474-a565-fa318668032e" name="Changes" comment="async">
+    <list default="true" id="f2c7959b-f0fc-4474-a565-fa318668032e" name="Changes" comment="err exception">
+      <change afterPath="$PROJECT_DIR$/celery_config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_shit/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_shit/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db_shit/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_shit/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -232,7 +233,15 @@
       <option name="project" value="LOCAL" />
       <updated>1709904318641</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="err exception">
+      <option name="closed" value="true" />
+      <created>1709909720973</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1709909720973</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -255,6 +264,7 @@
     <MESSAGE value="1 to 1, main mem, comments" />
     <MESSAGE value="scan + return text from image (selery, rabbitmq)" />
     <MESSAGE value="async" />
-    <option name="LAST_COMMIT_MESSAGE" value="async" />
+    <MESSAGE value="err exception" />
+    <option name="LAST_COMMIT_MESSAGE" value="err exception" />
   </component>
 </project>

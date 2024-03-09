@@ -1,24 +1,17 @@
-import shutil, os, uvicorn, pytesseract
-from PIL import Image
+import os
+import shutil
+import uvicorn
+
+from fastapi import FastAPI, UploadFile
+from fastapi.responses import FileResponse
 from sqlalchemy import Select
 from sqlalchemy.exc import IntegrityError
 
-from db_shit.models import Documents, init_models, Documents_text
+from celery_config import scan
 from db_shit.data import async_connection
-from fastapi import FastAPI, UploadFile
-from fastapi.responses import FileResponse
-from db_shit.config import celery
-
+from db_shit.models import Documents, init_models, Documents_text
 
 app = FastAPI()
-
-
-@celery.task
-def scan(image: str) -> str:
-    """получение текста из картинки"""
-    img = Image.open(image)
-    extr_text = pytesseract.image_to_string(img)
-    return extr_text
 
 
 @app.get('/')
@@ -65,9 +58,12 @@ async def doc_analyse(doc_id: int) -> dict:
             query = Select(Documents.path).filter(Documents.id == doc_id)
             result = await conn.execute(query)
             res = result.one()
-            img_text = scan(*res)
-            doc_text = Documents_text(id_doc=doc_id, text=img_text)
+            scan_text = scan.delay(*res)
+            img_text = scan_text.get()
+            print(scan_text)
             print(img_text)
+            doc_text = Documents_text(id_doc=doc_id, text=img_text)
+
         conn.add(doc_text)
         await conn.commit()
         return {'message': f'text has been added'}
