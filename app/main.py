@@ -7,9 +7,9 @@ from fastapi.responses import FileResponse
 from sqlalchemy import Select
 from sqlalchemy.exc import IntegrityError
 
-from celery_config import scan
-from db_shit.data import async_connection
-from db_shit.models import Documents, init_models, Documents_text
+from celery_.celery_config import scan
+from db.data import async_connection
+from db.models import Documents, init_models, Documents_text
 
 app = FastAPI()
 
@@ -17,7 +17,7 @@ app = FastAPI()
 @app.get('/')
 def root():
     """вывод приветственной страницы"""
-    return FileResponse('index.html')
+    return FileResponse('app/index.html')
 
 
 @app.post('/upload_doc')
@@ -28,8 +28,8 @@ async def upload_doc(file: UploadFile) -> dict:
             shutil.copyfileobj(file.file, buffer)
         async with async_connection() as conn:
             doc = Documents(path=f'Documents/{file.filename}')
-        conn.add(doc)
-        await conn.commit()
+            conn.add(doc)
+            await conn.commit()
         return {'message': f'file {file.filename} has been uploaded'}
     else:
         return {'message': 'wrong format of file'}
@@ -61,7 +61,6 @@ async def doc_analyse(doc_id: int) -> dict:
             scan_text = scan.delay(*res)
             img_text = scan_text.get()
             doc_text = Documents_text(id_doc=doc_id, text=img_text)
-
         conn.add(doc_text)
         await conn.commit()
         return {'message': f'text has been added'}

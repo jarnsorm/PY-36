@@ -1,7 +1,7 @@
 import datetime
 from typing import Annotated
-from db_shit.data import async_engine
-from sqlalchemy import MetaData, func, ForeignKey, Text
+from db.data import async_engine
+from sqlalchemy import MetaData, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
 metadata = MetaData()

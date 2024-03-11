@@ -12,4 +12,4 @@ def scan(image: str) -> str:
     extr_text = pytesseract.image_to_string(img)
     return extr_text
 
-# celery -A celery_config worker --loglevel=INFO
+# celery -A celery_.celery_config worker --loglevel=INFO
