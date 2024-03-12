@@ -1,17 +1,25 @@
+import asyncio
 import os
 import shutil
 import uvicorn
 
 from fastapi import FastAPI, UploadFile
 from fastapi.responses import FileResponse
-from sqlalchemy import Select
+from sqlalchemy import select, insert
 from sqlalchemy.exc import IntegrityError
 
-from celery_.celery_config import scan
+from for_celery.celery_config import scan
 from db.data import async_connection
 from db.models import Documents, init_models, Documents_text
 
 app = FastAPI()
+
+
+async def doc_id_to_path(doc_id: int) -> str:
+    async with async_connection() as conn:
+        stmt = select(Documents.path).filter(Documents.id == doc_id)
+        result = await conn.execute(stmt)
+    return result.scalar()
 
 
 @app.get('/')
@@ -38,16 +46,16 @@ async def upload_doc(file: UploadFile) -> dict:
 @app.delete('/doc_delete')
 async def doc_delete(doc_id: int) -> dict:
     """удаление файла, удаление данных о нем из БД"""
-    async with async_connection() as conn:
-        try:
-            query = Select(Documents.path).filter(Documents.id == doc_id)
-            res = await conn.execute(query).one()
-            os.remove(*res)
-            await conn.query(Documents).filter(Documents.id == doc_id).delete()
+    try:
+        res = await doc_id_to_path(doc_id)
+        os.remove(res)
+        async with async_connection() as conn:
+            obj = await conn.get(Documents, doc_id)
+            await conn.delete(obj)
             await conn.commit()
-            return {'message': 'file has been deleted'}
-        except Exception:
-            return {'message': 'wrong id'}
+        return {'message': 'file has been deleted'}
+    except (ValueError, IntegrityError):
+        return {'message': 'wrong id'}
 
 
 @app.post('/doc_analyse')
@@ -55,14 +63,12 @@ async def doc_analyse(doc_id: int) -> dict:
     """занесение текста в БД"""
     try:
         async with async_connection() as conn:
-            query = Select(Documents.path).filter(Documents.id == doc_id)
-            result = await conn.execute(query)
-            res = result.one()
-            scan_text = scan.delay(*res)
+            res = await doc_id_to_path(doc_id)
+            scan_text = scan.delay(res)
             img_text = scan_text.get()
-            doc_text = Documents_text(id_doc=doc_id, text=img_text)
-        conn.add(doc_text)
-        await conn.commit()
+            stmt = insert(Documents_text).values(id_doc=doc_id, text=img_text)
+            await conn.execute(stmt)
+            await conn.commit()
         return {'message': f'text has been added'}
     except (ValueError, IntegrityError):
         return {'message': 'wrong id'}
@@ -71,14 +77,15 @@ async def doc_analyse(doc_id: int) -> dict:
 @app.get('/get_text')
 async def get_text(doc_id: int) -> str | dict:
     """получение текста из БД"""
-    async with async_connection() as conn:
-        try:
-            query = Select(Documents_text.text).filter(Documents_text.id_doc == doc_id)
-            res = await conn.execute(query)
-            result = res.one()
-            return f'{result[0]}'
-        except Exception:
-            return {'message': 'wrong id'}
+
+    try:
+        async with async_connection() as conn:
+            stmt = select(Documents_text.text).filter(Documents_text.id == doc_id)
+            res = await conn.execute(stmt)
+            result = res.scalar()
+        return f'{result}'
+    except (ValueError, IntegrityError):
+        return {'message': 'wrong id'}
 
 
 if __name__ == '__main__':

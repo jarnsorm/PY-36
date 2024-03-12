@@ -1,0 +1,68 @@
+version: "3"
+services:
+  app:
+    container_name: my_app
+    build: ./
+    env_file:
+      - .env
+    ports:
+      - "8666:8000"
+    volumes:
+      - /home/jarnsorm/PycharmProjects/PY-36/Documents:/Documents
+    depends_on:
+      db:
+        condition: service_healthy
+      selery:
+        condition: service_healthy
+
+  db:
+    image: postgres:16.2
+    container_name: my_app_db
+    env_file:
+      - .env
+    ports:
+      - "5666:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}", "-h", "db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    expose:
+      - 5432
+
+  selery:
+    image: celery:latest
+    container_name: my_app_celery
+    env_file:
+      - .env
+    ports:
+      - "3333:3333"
+    healthcheck:
+      test: [ "CMD", "executable" ]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    expose:
+      - 3333
+
+  rabbit:
+    image: rabbitmq:3.9.13-alpine
+    container_name: my_app__rabbit
+    env_file:
+      - .env
+    ports:
+      - "9672:5672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    expose:
+      - 5672
