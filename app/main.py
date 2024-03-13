@@ -1,6 +1,7 @@
 import os
 import shutil
 import uvicorn
+import asyncio
 from fastapi import FastAPI, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy import select, insert
@@ -86,5 +87,5 @@ async def get_text(doc_id: int) -> str | dict:
 
 
 if __name__ == '__main__':
-    init_models()
-    uvicorn.run('main:app', reload=True)
+    asyncio.run(init_models())
+    uvicorn.run('main:app', host="0.0.0.0", reload=True)

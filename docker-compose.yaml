@@ -6,7 +6,7 @@ services:
     env_file:
       - .env
     ports:
-      - "8666:8000"
+      - "8000:8000"
     volumes:
       - /home/jarnsorm/PycharmProjects/PY-36/Documents:/Documents
     depends_on:
@@ -23,7 +23,7 @@ services:
     ports:
       - "5666:5432"
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}", "-h", "db"]
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}", "-h", "${DB_HOST}"]
       interval: 10s
       timeout: 5s
       retries: 5
