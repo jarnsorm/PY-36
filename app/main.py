@@ -5,7 +5,7 @@ from fastapi import FastAPI, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy import select, insert
 from sqlalchemy.exc import IntegrityError
-from for_cel.celery_config import scan
+from celery_config import scan
 from db.data import async_connection
 from db.models import Documents, init_models, Documents_text
 
