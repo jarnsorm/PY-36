@@ -1,6 +1,6 @@
 import datetime
 from typing import Annotated
-from db.data import async_engine
+from db.data import sync_connection, sync_engine
 from sqlalchemy import MetaData, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
@@ -29,7 +29,6 @@ class Documents_text(Base):
     text: Mapped[str]
 
 
-async def init_models():
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
+def init_models():
+    Base.metadata.drop_all(sync_engine)
+    Base.metadata.create_all(sync_engine)

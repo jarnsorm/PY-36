@@ -58,7 +58,8 @@ services:
     env_file:
       - .env
     ports:
-      - "9672:5672"
+      - "5673:5672"
+      - "25673:25672"
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 30s

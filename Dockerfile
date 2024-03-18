@@ -20,4 +20,4 @@ EXPOSE 8000
 
 ENV PYTHONPATH "/src"
 
-CMD ["python3", "app/main.py"]
+CMD ["python3", "src/app/main.py"]

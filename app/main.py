@@ -1,12 +1,11 @@
 import os
-import shutil
+import aiofiles
 import uvicorn
-import asyncio
 from fastapi import FastAPI, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy import select, insert
 from sqlalchemy.exc import IntegrityError
-from celery_config import scan
+from tasks import scan
 from db.data import async_connection
 from db.models import Documents, init_models, Documents_text
 
@@ -26,22 +25,26 @@ def root():
     return FileResponse('app/index.html')
 
 
-@app.post('/upload_doc')
+@app.post('/upload_doc/')
 async def upload_doc(file: UploadFile) -> dict:
     """загрузка файла в папку 'Documents', занесение данных о пути к файлу в БД"""
     if file.filename.endswith(('.png', '.jpg', '.jpeg')):
-        with open(f'Documents/{file.filename}', 'wb') as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        async with async_connection() as conn:
-            doc = Documents(path=f'Documents/{file.filename}')
-            conn.add(doc)
-            await conn.commit()
-        return {'message': f'file {file.filename} has been uploaded'}
+        try:
+            async with aiofiles.open(f'Documents/{file.filename}', 'wb') as buffer:
+                await buffer.write(await file.read())
+            async with async_connection() as conn:
+                stmt = insert(Documents).values(path=f'Documents/{file.filename}')
+                await conn.execute(stmt)
+                await conn.commit()
+            return {'message': f'file {file.filename} has been uploaded'}
+        except Exception as e:
+            print(e)
+            return {'message': f'An error occurred: {str(e)}'}
     else:
         return {'message': 'wrong format of file'}
 
 
-@app.delete('/doc_delete')
+@app.delete('/doc_delete/')
 async def doc_delete(doc_id: int) -> dict:
     """удаление файла, удаление данных о нем из БД"""
     try:
@@ -56,23 +59,18 @@ async def doc_delete(doc_id: int) -> dict:
         return {'message': 'wrong id'}
 
 
-@app.post('/doc_analyse')
+@app.post('/doc_analyse/')
 async def doc_analyse(doc_id: int) -> dict:
     """занесение текста в БД"""
     try:
-        async with async_connection() as conn:
-            res = await doc_id_to_path(doc_id)
-            scan_text = scan.delay(res)
-            img_text = scan_text.get()
-            stmt = insert(Documents_text).values(id_doc=doc_id, text=img_text)
-            await conn.execute(stmt)
-            await conn.commit()
-        return {'message': f'text has been added'}
-    except (ValueError, IntegrityError):
+        res = await doc_id_to_path(doc_id)
+        scan.delay(res, doc_id)
+        return {'message': 'text has been added'}
+    except IntegrityError:
         return {'message': 'wrong id'}
 
 
-@app.get('/get_text')
+@app.get('/get_text/')
 async def get_text(doc_id: int) -> str | dict:
     """получение текста из БД"""
 
@@ -87,5 +85,5 @@ async def get_text(doc_id: int) -> str | dict:
 
 
 if __name__ == '__main__':
-    asyncio.run(init_models())
+    init_models()
     uvicorn.run('main:app', host="0.0.0.0", reload=True)
