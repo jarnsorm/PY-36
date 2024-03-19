@@ -1,6 +1,6 @@
 import datetime
 from typing import Annotated
-from db.data import sync_connection, sync_engine
+from db.data import sync_engine
 from sqlalchemy import MetaData, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 

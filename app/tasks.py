@@ -5,8 +5,10 @@ from sqlalchemy import insert
 from db.data import sync_connection
 from db.models import Documents_text
 
-celery = Celery('tasks', backend='rpc://', broker='pyamqp://guest@localhost//')
+celery = Celery('app.tasks', backend='rpc://', broker='pyamqp://guest@localhost//', include=['app.tasks'])
 # celery -A app.tasks:celery worker --loglevel=INFO
+
+celery.autodiscover_tasks()
 
 
 @celery.task
@@ -19,5 +21,6 @@ def scan(image_path: str, doc_id: int):
                 stmt = insert(Documents_text).values(id_doc=doc_id, text=extracted_text)
                 conn.execute(stmt)
                 conn.commit()
+        return 'bitsh'
     except Exception as e:
         print(f"Ошибка при сканировании изображения: {e}")

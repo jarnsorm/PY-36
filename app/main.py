@@ -5,7 +5,7 @@ from fastapi import FastAPI, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy import select, insert
 from sqlalchemy.exc import IntegrityError
-from tasks import scan
+from app.tasks import scan
 from db.data import async_connection
 from db.models import Documents, init_models, Documents_text
 
