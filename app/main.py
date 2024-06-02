@@ -23,6 +23,12 @@ async def doc_id_to_path(doc_id: int) -> str:
 def root():
     """вывод приветственной страницы"""
     return FileResponse('app/index.html')
+    
+    
+@app.get('/status/')
+    def status():
+    """возвращает сообщение"""
+    return {'massage': 'satus: True'}
 
 
 @app.post('/upload_doc/')
