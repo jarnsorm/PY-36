@@ -27,7 +27,7 @@ def root():
     
 @app.get('/status/')
     def status():
-    """возвращает сообщение"""
+    """возвращает сообщение 'satus: True' """
     return {'massage': 'satus: True'}
 
 
