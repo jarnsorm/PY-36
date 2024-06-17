@@ -1,8 +1,8 @@
 import os
 import aiofiles
 import uvicorn
-from fastapi import FastAPI, UploadFile
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, UploadFile, status
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy import select, insert
 from sqlalchemy.exc import IntegrityError
 from app.tasks import scan
@@ -26,8 +26,8 @@ def root():
 
 
 @app.post('/upload_doc/')
-async def upload_doc(file: UploadFile) -> dict:
-    """загрузка файла в папку 'Documents', занесение данных о пути к файлу в БД"""
+async def upload_doc(file: UploadFile) -> JSONResponse:
+    """Загрузка файла в папку 'Documents', занесение данных о пути к файлу в БД"""
     if file.filename.endswith(('.png', '.jpg', '.jpeg')):
         try:
             async with aiofiles.open(f'Documents/{file.filename}', 'wb') as buffer:
@@ -36,17 +36,19 @@ async def upload_doc(file: UploadFile) -> dict:
                 stmt = insert(Documents).values(path=f'Documents/{file.filename}')
                 await conn.execute(stmt)
                 await conn.commit()
-            return {'message': f'file {file.filename} has been uploaded'}
+            return JSONResponse(content={'message': f'file "{file.filename}" has been uploaded'},
+                                status_code=status.HTTP_201_CREATED)
         except Exception as e:
-            print(e)
-            return {'message': f'An error occurred: {str(e)}'}
+            return JSONResponse(content={'message': f'An error occurred: {str(e)}'},
+                                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return {'message': 'wrong format of file'}
+        return JSONResponse(content={'message': 'wrong format of file'},
+                            status_code=status.HTTP_400_BAD_REQUEST)
 
 
 @app.delete('/doc_delete/')
-async def doc_delete(doc_id: int) -> dict:
-    """удаление файла, удаление данных о нем из БД"""
+async def doc_delete(doc_id: int) -> JSONResponse:
+    """Удаление файла, удаление данных о нем из БД"""
     try:
         res = await doc_id_to_path(doc_id)
         os.remove(res)
@@ -54,34 +56,59 @@ async def doc_delete(doc_id: int) -> dict:
             obj = await conn.get(Documents, doc_id)
             await conn.delete(obj)
             await conn.commit()
-        return {'message': 'file has been deleted'}
-    except (ValueError, IntegrityError):
-        return {'message': 'wrong id'}
+        return JSONResponse(content={'message': 'file has been deleted'},
+                            status_code=status.HTTP_200_OK)
+    except ValueError:
+        return JSONResponse(content={'message': 'wrong id'},
+                            status_code=status.HTTP_404_NOT_FOUND)
+    except IntegrityError:
+        return JSONResponse(content={'message': 'database integrity error'},
+                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+        return JSONResponse(content={'message': f'An error occurred: {str(e)}'},
+                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @app.post('/doc_analyse/')
-async def doc_analyse(doc_id: int) -> dict:
-    """занесение текста в БД"""
+async def doc_analyse(doc_id: int) -> JSONResponse:
+    """Занесение текста в БД"""
     try:
         res = await doc_id_to_path(doc_id)
         scan.delay(res, doc_id)
-        return {'message': 'text has been added'}
+        return JSONResponse(content={'message': 'text has been added'},
+                            status_code=status.HTTP_200_OK)
+    except ValueError:
+        return JSONResponse(content={'message': 'wrong id'},
+                            status_code=status.HTTP_404_NOT_FOUND)
     except IntegrityError:
-        return {'message': 'wrong id'}
+        return JSONResponse(content={'message': 'database integrity error'},
+                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+        return JSONResponse(content={'message': f'An error occurred: {str(e)}'},
+                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @app.get('/get_text/')
-async def get_text(doc_id: int) -> str | dict:
-    """получение текста из БД"""
-
+async def get_text(doc_id: int) -> JSONResponse:
+    """Получение текста из БД"""
     try:
         async with async_connection() as conn:
-            stmt = select(Documents_text.text).filter(Documents_text.id == doc_id)
+            stmt = select(Documents_text.c.text).where(Documents_text.c.id == doc_id)
             res = await conn.execute(stmt)
             result = res.scalar()
-        return f'{result}'
-    except (ValueError, IntegrityError):
-        return {'message': 'wrong id'}
+            if result is None:
+                raise ValueError("Document text not found")
+        return JSONResponse(content={'text': result},
+                            status_code=status.HTTP_200_OK)
+    except ValueError:
+        return JSONResponse(content={'message': 'wrong id'},
+                            status_code=status.HTTP_404_NOT_FOUND)
+    except IntegrityError:
+        return JSONResponse(content={'message': 'database integrity error'},
+                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+        return JSONResponse(content={'message': f'An error occurred: {str(e)}'},
+                            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 if __name__ == '__main__':
