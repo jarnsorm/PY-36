@@ -14,6 +14,7 @@ from db.data import async_connection, sync_engine
 
 client = TestClient(app)
 a_client = AsyncClient(transport=ASGITransport(app=app), base_url=SERVICE_URL)
+# пытался настроить лупы
 a_client.get_io_loop = asyncio.get_running_loop
 
 file_name = "test_upload_image.jpg"
