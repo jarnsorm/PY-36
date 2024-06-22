@@ -12,21 +12,6 @@ from db.models import Documents, init_models, Documents_text
 app = FastAPI()
 
 
-async def doc_id_to_path(doc_id: int) -> str:
-    print("starting 'doc_id_to_path'")
-    try:
-        async with async_connection() as conn:
-            stmt = select(Documents.path).filter(Documents.id == doc_id)
-            result = await conn.execute(stmt)
-            path = result.scalar()
-            if not path:
-                raise ValueError(f"File path not found for doc_id={doc_id}")
-            return path
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        raise
-
-
 @app.get('/')
 def root():
     """вывод приветственной страницы"""
@@ -36,22 +21,37 @@ def root():
 @app.post('/upload_doc/')
 async def upload_doc(file: UploadFile) -> JSONResponse:
     """Загрузка файла в папку 'Documents', занесение данных о пути к файлу в БД"""
-    if file.filename.endswith(('.png', '.jpg', '.jpeg')):
-        try:
-            async with aiofiles.open(f'Documents/{file.filename}', 'wb') as buffer:
-                await buffer.write(await file.read())
-            async with async_connection() as conn:
-                stmt = insert(Documents).values(path=f'Documents/{file.filename}')
-                await conn.execute(stmt)
-                await conn.commit()
-            return JSONResponse(content={'message': f'file "{file.filename}" has been uploaded'},
-                                status_code=status.HTTP_201_CREATED)
-        except Exception as e:
-            return JSONResponse(content={'message': f'An error occurred: {str(e)}'},
-                                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    else:
-        return JSONResponse(content={'message': 'wrong format of file'},
-                            status_code=status.HTTP_400_BAD_REQUEST)
+    try:
+        if not file.filename.endswith(('.png', '.jpg', '.jpeg')):
+            return JSONResponse(content={'message': 'wrong format of file'},
+                                status_code=400)
+        file_path = f'Documents/{file.filename}'
+        async with aiofiles.open(file_path, 'wb') as buffer:
+            content = await file.read()
+            await buffer.write(content)
+
+        async with async_connection() as conn:
+            stmt = insert(Documents).values(path=file_path)
+            await conn.execute(stmt)
+            await conn.commit()
+
+        return JSONResponse(content={'message': f'file "{file.filename}" has been uploaded'},
+                            status_code=201)
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return JSONResponse(content={'message': f'An error occurred: {str(e)}'},
+                            status_code=500)
+
+
+async def doc_id_to_path(doc_id: int) -> str:
+    async with async_connection() as conn:
+        async with conn.begin():
+            stmt = select(Documents.path).filter(Documents.id == doc_id)
+            result = await conn.execute(stmt)
+            path = result.scalar()
+            if not path:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Document with id={doc_id} not found")
+            return path
 
 
 @app.delete('/doc_delete/')
@@ -63,20 +63,23 @@ async def doc_delete(doc_id: int) -> JSONResponse:
             os.remove(file_path)
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"File not found at {file_path}")
-        async with async_connection() as conn:
-            obj = await conn.get(Documents, doc_id)
-            if obj is None:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Document with id={doc_id} not found")
-            await conn.delete(obj)
-            await conn.commit()
+
+        async with async_connection() as session:
+            async with session.begin():
+                obj = await session.get(Documents, doc_id)
+                if obj is None:
+                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Document with id={doc_id} not found")
+                session.delete(obj)
+                await session.commit()
+
         return JSONResponse(content={'message': 'File and data have been deleted'},
                             status_code=status.HTTP_200_OK)
+
     except HTTPException as http_exc:
         raise http_exc
     # except Exception as e:
-    #     print(e)
-    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-    #                         detail=f"Document not found")
+    #     print(f"An error occurred in 'doc_delete': {str(e)}")
+    #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @app.post('/doc_analyse/')
@@ -103,7 +106,7 @@ async def get_text(doc_id: int) -> JSONResponse:
     """Получение текста из БД"""
     try:
         async with async_connection() as conn:
-            stmt = select(Documents_text.c.text).where(Documents_text.c.id == doc_id)
+            stmt = select(Documents_text.text).where(Documents_text.id == doc_id)
             res = await conn.execute(stmt)
             result = res.scalar()
             if result is None:

@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f2c7959b-f0fc-4474-a565-fa318668032e" name="Changes" comment="JSONResponse добавлен на эндпоинты, подготовка к написанию тестов">
-      <change afterPath="$PROJECT_DIR$/tests/Errors.py" afterDir="false" />
+    <list default="true" id="f2c7959b-f0fc-4474-a565-fa318668032e" name="Changes" comment="меня ломает /doc_delete/">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/classes.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/classes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_1.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -394,7 +393,23 @@
       <option name="project" value="LOCAL" />
       <updated>1718626810578</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="пройден тест соединения с сервером">
+      <option name="closed" value="true" />
+      <created>1718692856548</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1718692856548</updated>
+    </task>
+    <task id="LOCAL-00035" summary="меня ломает /doc_delete/">
+      <option name="closed" value="true" />
+      <created>1718966111884</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1718966111884</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -427,6 +442,8 @@
     <MESSAGE value="f*** celery kills me" />
     <MESSAGE value="it's alive!" />
     <MESSAGE value="JSONResponse добавлен на эндпоинты, подготовка к написанию тестов" />
-    <option name="LAST_COMMIT_MESSAGE" value="JSONResponse добавлен на эндпоинты, подготовка к написанию тестов" />
+    <MESSAGE value="пройден тест соединения с сервером" />
+    <MESSAGE value="меня ломает /doc_delete/" />
+    <option name="LAST_COMMIT_MESSAGE" value="меня ломает /doc_delete/" />
   </component>
 </project>
