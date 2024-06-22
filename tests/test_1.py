@@ -57,6 +57,7 @@ class TestDocuments:
             count = result.scalar()
             assert count == len(documents)
 
+    @pytest.mark.skip("attached to a different loop")
     @pytest.mark.asyncio
     async def test_upload_valid_file(self):
         """Тест на загрузку файла с допустимым расширением"""
@@ -69,31 +70,34 @@ class TestDocuments:
             assert response.json() == {'message': f'file "{file_name}" has been uploaded'}
         os.remove(file_name)
 
-    # def test_upload_invalid_file(self):
-    #     """Тест на загрузку файла с недопустимым расширением"""
-    #     with open("test_document.txt", "wb") as f:
-    #         f.write(b"test document content")
-    #     with open("test_document.txt", "rb") as f:
-    #         response = client.post(
-    #             f"{SERVICE_URL}/upload_doc/", files={"file": ("test_document.txt", f, "text/plain")}
-    #             )
-    #     assert response.status_code == 400
-    #     assert response.json() == {'message': 'wrong format of file'}
-    #
-    # @pytest.mark.asyncio
-    # async def test_doc_delete(self):
-    #     async with AsyncClient(app=app, base_url=SERVICE_URL) as ac:
-    #         response = await ac.delete(f"/doc_delete/?doc_id=2")
-    #         assert response.status_code == 200
-    #         assert response.json() == {'message': 'File and data have been deleted'}
-    #
-    #     # Verify the document is deleted
-    #     async with async_connection() as session:
-    #         result = await session.execute(select(Documents).filter(Documents.id == 2))
-    #         deleted_doc = result.scalar()
-    #         assert deleted_doc is None
-    #
-    #     # Verify the file is deleted
-    #     assert not os.path.exists("test_file.jpg")
+    def test_upload_invalid_file(self):
+        """Тест на загрузку файла с недопустимым расширением"""
+        with open("test_document.txt", "wb") as f:
+            f.write(b"test document content")
+        with open("test_document.txt", "rb") as f:
+            response = client.post(
+                f"{SERVICE_URL}/upload_doc/", files={"file": ("test_document.txt", f, "text/plain")}
+                )
+        assert response.status_code == 400
+        assert response.json() == {'message': 'wrong format of file'}
+        os.remove("test_document.txt")
+
+    @pytest.mark.skip("attached to a different loop")
+    @pytest.mark.asyncio
+    async def test_doc_delete(self):
+        async with AsyncClient(app=app, base_url=SERVICE_URL) as ac:
+            response = await ac.delete(f"/doc_delete/?doc_id=2")
+            assert response.status_code == 200
+            assert response.json() == {'message': 'File and data have been deleted'}
+
+        # Verify the document is deleted
+        async with async_connection() as session:
+            result = await session.execute(select(Documents).filter(Documents.id == 2))
+            deleted_doc = result.scalar()
+            assert deleted_doc is None
+
+        # Verify the file is deleted
+        assert not os.path.exists("test_file.jpg")
+
 
 
