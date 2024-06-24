@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f2c7959b-f0fc-4474-a565-fa318668032e" name="Changes" comment="f*** celery kills me">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+    <list default="true" id="f2c7959b-f0fc-4474-a565-fa318668032e" name="Changes" comment="меня ломает /doc_delete/">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/celery_config.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/tasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/db/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_1.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +24,7 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIEW_PUSH_PROTECTED_ONLY" value="true" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="PY-36" />
@@ -42,14 +40,12 @@
     &quot;assignee&quot;: &quot;jarnsorm&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">
-    <option name="selectedUrlAndAccountId">
-      <UrlAndAccount>
-        <option name="accountId" value="c75ca069-18ae-42b0-9a67-6aaeecf7d3ff" />
-        <option name="url" value="https://github.com/jarnsorm/PY-36.git" />
-      </UrlAndAccount>
-    </option>
-  </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/jarnsorm/PY-36.git&quot;,
+    &quot;accountId&quot;: &quot;c75ca069-18ae-42b0-9a67-6aaeecf7d3ff&quot;
+  }
+}</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -75,8 +71,7 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.Mappings&quot;
   },
   &quot;keyToStringList&quot;: {
-    &quot;ChangesTree.GroupingKeys&quot;: [
-    ]
+    &quot;ChangesTree.GroupingKeys&quot;: []
   }
 }</component>
   <component name="RecentsManager">
@@ -121,7 +116,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-d68999036c7f-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.14475.56" />
+        <option value="bundled-python-sdk-5b207ade9991-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.17890.14" />
       </set>
     </attachedChunks>
   </component>
@@ -382,7 +377,39 @@
       <option name="project" value="LOCAL" />
       <updated>1710800905028</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="it's alive!">
+      <option name="closed" value="true" />
+      <created>1710854890667</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1710854890667</updated>
+    </task>
+    <task id="LOCAL-00033" summary="JSONResponse добавлен на эндпоинты, подготовка к написанию тестов">
+      <option name="closed" value="true" />
+      <created>1718626810578</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1718626810578</updated>
+    </task>
+    <task id="LOCAL-00034" summary="пройден тест соединения с сервером">
+      <option name="closed" value="true" />
+      <created>1718692856548</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1718692856548</updated>
+    </task>
+    <task id="LOCAL-00035" summary="меня ломает /doc_delete/">
+      <option name="closed" value="true" />
+      <created>1718966111884</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1718966111884</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -413,6 +440,10 @@
     <MESSAGE value="RTW, pythonpath" />
     <MESSAGE value="already" />
     <MESSAGE value="f*** celery kills me" />
-    <option name="LAST_COMMIT_MESSAGE" value="f*** celery kills me" />
+    <MESSAGE value="it's alive!" />
+    <MESSAGE value="JSONResponse добавлен на эндпоинты, подготовка к написанию тестов" />
+    <MESSAGE value="пройден тест соединения с сервером" />
+    <MESSAGE value="меня ломает /doc_delete/" />
+    <option name="LAST_COMMIT_MESSAGE" value="меня ломает /doc_delete/" />
   </component>
 </project>

@@ -30,5 +30,5 @@ class Documents_text(Base):
 
 
 def init_models():
-    Base.metadata.drop_all(sync_engine)
+    # Base.metadata.drop_all(sync_engine)
     Base.metadata.create_all(sync_engine)
