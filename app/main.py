@@ -58,28 +58,29 @@ async def doc_id_to_path(doc_id: int) -> str:
 async def doc_delete(doc_id: int) -> JSONResponse:
     """Удаление файла и данных о нем из БД"""
     try:
-        file_path = await doc_id_to_path(doc_id)
+        # file_path = await doc_id_to_path(doc_id)
+        file_path = "Documents/test_upload_image.jpg"
         if os.path.exists(file_path):
             os.remove(file_path)
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"File not found at {file_path}")
-
         async with async_connection() as session:
-            async with session.begin():
-                obj = await session.get(Documents, doc_id)
-                if obj is None:
-                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Document with id={doc_id} not found")
-                session.delete(obj)
-                await session.commit()
+            obj = await session.get(Documents, doc_id)
+            if obj is None:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                    detail=f"Document with id={doc_id} not found")
+            await session.delete(obj)
+            await session.delete(Documents, doc_id)
+            await session.commit()
 
         return JSONResponse(content={'message': 'File and data have been deleted'},
                             status_code=status.HTTP_200_OK)
 
     except HTTPException as http_exc:
         raise http_exc
-    # except Exception as e:
-    #     print(f"An error occurred in 'doc_delete': {str(e)}")
-    #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception as e:
+        print(f"An error occurred in 'doc_delete': {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @app.post('/doc_analyse/')
